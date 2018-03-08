@@ -16,6 +16,9 @@ struct solenoid {
 };
 #endif
 //on and off functions just trigger pins. possibly instead store pin info in the struct?
+#define SOLENOID_NUM 5
+
+unsigned char solenoid_state[SOLENOID_NUM];
 namespace solenoid {
 struct solenoid {
 	GPIO_Type *base;

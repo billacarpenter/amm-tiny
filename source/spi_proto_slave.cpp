@@ -21,34 +21,22 @@ namespace spi_proto {
 //this is a simple protocol, that doesn't support arbitrary length messages
 //TODO this contains seattle demo code fold it into the rewritten receive function
 int
-slave_get_message(struct slave_spi_proto &p, unsigned char *buf, int len)
+slave_get_message(struct spi_packet &p)
 {
 	//TODO parses the message and does any required processing
 
 	//* //for debugging SPI
+	/*
 	for (int i = 0; i < len; i++) {
 		PRINTF("%02x ", buf[i]);
 	}
 	PRINTF("\r\n");
+	*/
 	//*/
-	//if it's heartrate,
-	//led_delay_time = 0.5/(((float)slaveReceiveBuffer[0]) * (1.0/60.0) * 0.001);
-	heart_rate = p.getbuf[0];
-	heart_delay_time = 0.5/(((float)(p.getbuf[0])) * (1.0/60.0) * 0.001);
-	//second 1/2 is because rate counts inhales and exhales
-	breath_rate = p.getbuf[1];
-	breath_delay_time = 0.5 * 0.5/(((float)(p.getbuf[1])) * (1.0/60.0) * 0.001);
 
-	//tourniquet is second byte
-	if (p.getbuf[2]){
-		//set tourniquet on, so stop bleeding
-		tourniquet_on = true;
+	for (int i = 0; i < SOLENOID_NUM;i++) {
+		solenoid_state[i] = p.msg[i];
 	}
-	if (p.getbuf[3]) {
-		//start bleeding
-		hemorrhage_enabled = true;
-	}
-
 	//TODO make this control solenoid stuff
 	return 0;
 

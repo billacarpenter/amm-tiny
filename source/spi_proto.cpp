@@ -27,6 +27,8 @@ extern "C" {
 void
 spi_proto_rcv_msg(struct spi_state *s, struct spi_packet *p, spi_msg_callback_t f)
 {
+	f(p); // FIXME this is just for this branch, totally disables message protocol
+	return;
 	uint16_t rcvd_crc = p->crc;
 	uint16_t calc_crc = spi_msg_crc(p);
 	

@@ -41,8 +41,8 @@ solenoids_toggle(void)
 	GPIO_TogglePinsOutput(GPIOA, 1 << 25U);
 	GPIO_TogglePinsOutput(GPIOB, 1 << 18U);
 	GPIO_TogglePinsOutput(GPIOB, 1 << 19U);
-	//GPIO_TogglePinsOutput(GPIOC, 1 << 10U);
-	//GPIO_TogglePinsOutput(GPIOC, 1 << 11U);
+	GPIO_TogglePinsOutput(GPIOC, 1 << 10U);
+	GPIO_TogglePinsOutput(GPIOC, 1 << 11U);
 
 	return 0;
 }
@@ -69,25 +69,31 @@ void
 lungs_toggle(void) {GPIO_TogglePinsOutput(GPIOB, 1 << 19U);}
 
 //TODO make a task that waits on the first of any of a number of times
+
+struct solenoid::solenoid solenoids[SOLENOID_NUM] = {
+	{GPIOA, 25U},
+	{GPIOB, 18U},
+	{GPIOB, 19U},
+	{GPIOC, 10U},
+	{GPIOC, 11U}
+};
+
 void
 solenoid_task(void *params)
 {
-
-	hemorrhage_off();
-	swelling_off();
-
+	//TODO turn all solenoids off
+	
 	for (;;) {
-		//solenoids_toggle();
-		if (spi_proto::spi_transactions > 0) {
-			hemorrhage_enabled ?
-				tourniquet_on ? hemorrhage_off() : hemorrhage_toggle()
-					: hemorrhage_off();
+		
+		for (int i = 0; i < SOLENOID_NUM;i++) {
+			if (solenoid_state[i]) {
+				solenoid::on(solenoids[i]);
+			} else {
+				solenoid::off(solenoids[i]);
+			}
 		}
-		swelling_toggle();
-		vTaskDelay(heart_delay_time > 0 ? heart_delay_time : 1000);
-		//vTaskDelay(3000);
+		vTaskDelay(100);
 	}
-	vTaskSuspend(NULL);
 }
 
 void
